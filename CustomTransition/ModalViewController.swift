@@ -21,5 +21,6 @@ final class AnotherViewController: UIViewController {
 	override func viewDidLoad() {
 		view.backgroundColor = .green
 		view.addSubview(label)
+		view.layer.cornerRadius = 15
 	}
 }
