@@ -25,6 +25,7 @@ let button = UIButton(frame: CGRect(x: 0,
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.addSubview(button)
+		overrideUserInterfaceStyle = .light
 	}
 
 
