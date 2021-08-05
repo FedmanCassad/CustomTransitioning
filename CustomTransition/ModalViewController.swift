@@ -11,7 +11,10 @@ final class AnotherViewController: UIViewController {
 	lazy var label: UILabel = {
 		let label = UILabel()
 		label.text = "Hello there, Pavel!"
+		label.sizeToFit()
 		label.center = view.center
+		label.textColor = .magenta
+
 		return label
 	}()
 
