@@ -14,7 +14,6 @@ final class AnotherViewController: UIViewController {
 		label.sizeToFit()
 		label.center = view.center
 		label.textColor = .magenta
-
 		return label
 	}()
 
@@ -22,5 +21,7 @@ final class AnotherViewController: UIViewController {
 		view.backgroundColor = .green
 		view.addSubview(label)
 		view.layer.cornerRadius = 15
+        view.layer.cornerCurve = .continuous
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 	}
 }

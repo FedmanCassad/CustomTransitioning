@@ -8,19 +8,18 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-	private var anotherVCTransitioningDelegate: CustomModalTransitionDelegate!
-	lazy var button: UIButton = {
-let button = UIButton(frame: CGRect(x: 0,
-									y: 0,
-									width: 100,
-									height: 30))
-		button.setTitle("Show VC", for: .normal)
-		button.setTitleColor(.systemBlue, for: .normal)
-		button.addTarget(self, action: #selector(goToAnotherVC), for: .touchUpInside)
-		button.center = view.center
-		return button
-	}()
+    
+    private var anotherVCTransitioningDelegate: CustomModalTransitionDelegate!
+    
+    private lazy var button: UIButton = {
+        let button = UIButton(frame: .zero)
+        button.setTitle("Show VC", for: .normal)
+        button.sizeToFit()
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.addTarget(self, action: #selector(goToAnotherVC), for: .touchUpInside)
+        button.center = view.center
+        return button
+    }()
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -29,8 +28,7 @@ let button = UIButton(frame: CGRect(x: 0,
 	}
 
 
-	@objc
-	func goToAnotherVC() {
+	@objc func goToAnotherVC() {
 		let controller = AnotherViewController()
 		anotherVCTransitioningDelegate = CustomModalTransitionDelegate(from: self, to: controller)
 		controller.modalPresentationStyle = .custom
