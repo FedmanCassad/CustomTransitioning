@@ -9,7 +9,9 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private var anotherVCTransitioningDelegate: CustomModalTransitionDelegate!
+    // MARK: - Private Properties
+    
+    private var customModalTransitionDelegate: CustomModalTransitionDelegate!
     
     private lazy var button: UIButton = {
         let button = UIButton(frame: .zero)
@@ -20,21 +22,24 @@ class ViewController: UIViewController {
         button.center = view.center
         return button
     }()
-
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		view.addSubview(button)
-		overrideUserInterfaceStyle = .light
-	}
-
-
-	@objc func goToAnotherVC() {
+    
+    // MARK: - Life Cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.addSubview(button)
+        overrideUserInterfaceStyle = .light
+    }
+    
+    // MARK: - Actions
+    
+    @objc func goToAnotherVC() {
         let vc = ModalPresentedViewController()
         customModalTransitionDelegate = CustomModalTransitionDelegate(from: self, to: vc)
         vc.modalPresentationStyle = .custom
         vc.transitioningDelegate = customModalTransitionDelegate
         present(vc, animated: true, completion: nil)
-	}
-
+    }
+    
 }
 
