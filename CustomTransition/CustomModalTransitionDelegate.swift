@@ -37,11 +37,10 @@ final class CustomModalTransitionDelegate: NSObject, UIViewControllerTransitioni
         presenting: UIViewController?,
         source: UIViewController
     ) -> UIPresentationController? {
-        let customModalPresentationController = CustomModalPresentationController(
+        CustomModalPresentationController(
             presentedViewController: presentedViewController,
             presenting: presentingViewController
         )
-        return customModalPresentationController
     }
     
 	func interactionControllerForDismissal(
