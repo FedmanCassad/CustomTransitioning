@@ -29,11 +29,11 @@ class ViewController: UIViewController {
 
 
 	@objc func goToAnotherVC() {
-		let controller = AnotherViewController()
-		anotherVCTransitioningDelegate = CustomModalTransitionDelegate(from: self, to: controller)
-		controller.modalPresentationStyle = .custom
-		controller.transitioningDelegate = anotherVCTransitioningDelegate
-		present(controller, animated: true, completion: nil)
+        let vc = ModalPresentedViewController()
+        customModalTransitionDelegate = CustomModalTransitionDelegate(from: self, to: vc)
+        vc.modalPresentationStyle = .custom
+        vc.transitioningDelegate = customModalTransitionDelegate
+        present(vc, animated: true, completion: nil)
 	}
 
 }
