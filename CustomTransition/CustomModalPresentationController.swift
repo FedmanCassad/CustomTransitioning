@@ -11,19 +11,20 @@ final class CustomModalPresentationController: UIPresentationController {
     
     // MARK: - Public Properties
     
+    public var presentedViewHeight: CGFloat?
+    
     override var frameOfPresentedViewInContainerView: CGRect {
         guard let containerView = containerView else { return .zero }
         return CGRect(
             x: 0,
-            y: presentedViewYOffset,
+            y: containerView.bounds.height - (presentedViewHeight ?? 0),
             width: containerView.bounds.width,
-            height: containerView.bounds.height - presentedViewYOffset
+            height: presentedViewHeight ?? containerView.bounds.height
         )
     }
     
     // MARK: - Private Properties
     
-    private lazy var presentedViewYOffset: CGFloat = 135
     private var swipeVelocity: CGFloat = 0
     
     private lazy var fadingView: UIView = {
@@ -37,7 +38,6 @@ final class CustomModalPresentationController: UIPresentationController {
     // MARK: - Life Cycle
     
     override func presentationTransitionWillBegin() {
-        print(#function, #line)
         guard
             let container = containerView,
             let coordinator = presentingViewController.transitionCoordinator
@@ -80,21 +80,23 @@ final class CustomModalPresentationController: UIPresentationController {
               let containerView = containerView else { return }
         
         let translation = sender.translation(in: containerView)
+        let presentedViewHeight = presentedViewHeight ?? containerView.bounds.height
+        let presentedViewYOffset = containerView.bounds.height - presentedViewHeight
         
         switch sender.state {
         case .changed:
             let velocity = sender.velocity(in: containerView)
             self.swipeVelocity = velocity.y
             
-            let newOriginYPosition = translation.y + presentedViewYOffset
+            let newOriginYPosition = presentedViewYOffset + translation.y
             
             // Устанавливаем границу, выше которой нельзя растягивать наш презентуемый экран
             guard newOriginYPosition >= frameOfPresentedViewInContainerView.minY else { return }
-            presentedView.frame.origin.y = presentedViewYOffset + translation.y
+            presentedView.frame.origin.y = newOriginYPosition
             
         case .ended:
             let presentedViewYPosition = presentedView.frame.origin.y
-            let yThresholdForDismiss = containerView.frame.height * 0.5
+            let yThresholdForDismiss = presentedViewYOffset + presentedViewHeight * 0.25
             
             // Если скорость смахивания достаточно высокая - значит пользователь хочет смахнуть окно. Если он достаточно далеко вниз отвел окно и отпустил, то скорее всего он тоже хочет смахнуть окно. В ином случае нужно вернуть нашу вьюху на место.
             if swipeVelocity > 650 || presentedViewYPosition > yThresholdForDismiss {
