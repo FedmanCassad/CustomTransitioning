@@ -9,14 +9,22 @@ import UIKit
 
 final class CustomModalTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
     
-	var interactiveDismiss = true
-
-	init(
-        from currentlyPresented: UIViewController,
-        to presenting: UIViewController
+    // MARK: - Private Properties
+    
+    private let presentingViewController: UIViewController
+    private let presentedViewController: CustomModalPresentedViewController
+    
+    // MARK: - Initializers
+    
+    init(
+        from presentingViewController: UIViewController,
+        to presentedViewController: CustomModalPresentedViewController
     ) {
-		super.init()
-	}
+        self.presentingViewController = presentingViewController
+        self.presentedViewController = presentedViewController
+    }
+    
+    // MARK: - Public Methods
 
 	func animationController(
         forDismissed dismissed: UIViewController
@@ -30,10 +38,9 @@ final class CustomModalTransitionDelegate: NSObject, UIViewControllerTransitioni
         source: UIViewController
     ) -> UIPresentationController? {
         let customModalPresentationController = CustomModalPresentationController(
-            presentedViewController: presented,
-            presenting: presenting
+            presentedViewController: presentedViewController,
+            presenting: presentingViewController
         )
-        customModalPresentationController.presentedViewHeight = 500
         return customModalPresentationController
     }
     
