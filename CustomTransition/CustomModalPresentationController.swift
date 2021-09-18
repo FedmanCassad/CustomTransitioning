@@ -11,8 +11,6 @@ final class CustomModalPresentationController: UIPresentationController {
     
     // MARK: - Public Properties
     
-    public var presentedViewHeight: CGFloat?
-    
     override var frameOfPresentedViewInContainerView: CGRect {
         guard let containerView = containerView else { return .zero }
         return CGRect(
@@ -25,6 +23,7 @@ final class CustomModalPresentationController: UIPresentationController {
     
     // MARK: - Private Properties
     
+    private var presentedViewHeight: CGFloat?
     private var swipeVelocity: CGFloat = 0
     
     private lazy var fadingView: UIView = {
@@ -34,6 +33,14 @@ final class CustomModalPresentationController: UIPresentationController {
         view.alpha = 0
         return view
     }()
+    
+    init(
+        presentedViewController: CustomModalPresentedViewController,
+        presenting presentingViewController: UIViewController?
+    ) {
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        self.presentedViewHeight = presentedViewController.presentedViewHeight
+    }
     
     // MARK: - Life Cycle
     
@@ -114,8 +121,8 @@ final class CustomModalPresentationController: UIPresentationController {
     
     private func addGestureRecognizers() {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
-        if let presentedViewController = presentedViewController as? HasViewToSwipeForDismissProtocol {
-            presentedViewController.viewToSwipe.addGestureRecognizer(panGestureRecognizer)
+        if let presentedViewController = presentedViewController as? CustomModalPresentedViewController {
+            presentedViewController.viewToSwipeForDismissing.addGestureRecognizer(panGestureRecognizer)
         } else {
             presentedViewController.view.addGestureRecognizer(panGestureRecognizer)
         }
