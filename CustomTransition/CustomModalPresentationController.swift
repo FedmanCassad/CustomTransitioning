@@ -114,7 +114,11 @@ final class CustomModalPresentationController: UIPresentationController {
     
     private func addGestureRecognizers() {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
-        presentedViewController.view.addGestureRecognizer(panGestureRecognizer)
+        if let presentedViewController = presentedViewController as? HasViewToSwipeForDismissProtocol {
+            presentedViewController.viewToSwipe.addGestureRecognizer(panGestureRecognizer)
+        } else {
+            presentedViewController.view.addGestureRecognizer(panGestureRecognizer)
+        }
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapPastPresentedScreen))
         fadingView.addGestureRecognizer(tapGestureRecognizer)
