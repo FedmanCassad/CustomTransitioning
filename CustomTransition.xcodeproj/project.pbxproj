@@ -13,7 +13,7 @@
 		D80BF6C126BC8E9600129AEB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D80BF6BF26BC8E9600129AEB /* Main.storyboard */; };
 		D80BF6C326BC8E9B00129AEB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D80BF6C226BC8E9B00129AEB /* Assets.xcassets */; };
 		D80BF6C626BC8E9B00129AEB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D80BF6C426BC8E9B00129AEB /* LaunchScreen.storyboard */; };
-		D80BF6CE26BC8FBB00129AEB /* ModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80BF6CD26BC8FBB00129AEB /* ModalViewController.swift */; };
+		D80BF6CE26BC8FBB00129AEB /* ModalPresentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80BF6CD26BC8FBB00129AEB /* ModalPresentedViewController.swift */; };
 		D80BF6D026BC91EC00129AEB /* CustomModalTransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80BF6CF26BC91EC00129AEB /* CustomModalTransitionDelegate.swift */; };
 		D80BF6D226BC93CE00129AEB /* CustomModalPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80BF6D126BC93CE00129AEB /* CustomModalPresentationController.swift */; };
 /* End PBXBuildFile section */
@@ -27,7 +27,7 @@
 		D80BF6C226BC8E9B00129AEB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D80BF6C526BC8E9B00129AEB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D80BF6C726BC8E9B00129AEB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D80BF6CD26BC8FBB00129AEB /* ModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViewController.swift; sourceTree = "<group>"; };
+		D80BF6CD26BC8FBB00129AEB /* ModalPresentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPresentedViewController.swift; sourceTree = "<group>"; };
 		D80BF6CF26BC91EC00129AEB /* CustomModalTransitionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomModalTransitionDelegate.swift; sourceTree = "<group>"; };
 		D80BF6D126BC93CE00129AEB /* CustomModalPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomModalPresentationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,7 +69,7 @@
 				D80BF6C226BC8E9B00129AEB /* Assets.xcassets */,
 				D80BF6C426BC8E9B00129AEB /* LaunchScreen.storyboard */,
 				D80BF6C726BC8E9B00129AEB /* Info.plist */,
-				D80BF6CD26BC8FBB00129AEB /* ModalViewController.swift */,
+				D80BF6CD26BC8FBB00129AEB /* ModalPresentedViewController.swift */,
 				D80BF6CF26BC91EC00129AEB /* CustomModalTransitionDelegate.swift */,
 				D80BF6D126BC93CE00129AEB /* CustomModalPresentationController.swift */,
 			);
@@ -146,7 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D80BF6CE26BC8FBB00129AEB /* ModalViewController.swift in Sources */,
+				D80BF6CE26BC8FBB00129AEB /* ModalPresentedViewController.swift in Sources */,
 				D80BF6BE26BC8E9600129AEB /* ViewController.swift in Sources */,
 				D80BF6D026BC91EC00129AEB /* CustomModalTransitionDelegate.swift in Sources */,
 				D80BF6BA26BC8E9600129AEB /* AppDelegate.swift in Sources */,

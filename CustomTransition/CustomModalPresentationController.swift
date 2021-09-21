@@ -7,117 +7,143 @@
 
 import UIKit
 
-enum ModalScaleState {
-	case presenting
-	case interaction
-}
-
 final class CustomModalPresentationController: UIPresentationController {
-	private let presentedYOffset: CGFloat = 35
-	private var direction: CGFloat = 0
-	private var state: ModalScaleState = .interaction
-	private lazy var fadingView: UIView! = {
-		guard let container = containerView else { return nil }
-		let view = UIView(frame: container.bounds)
-		view.backgroundColor = .black.withAlphaComponent(0.75)
-		let gr = UITapGestureRecognizer(target: self, action: #selector(didTap(sender:)))
-		view.addGestureRecognizer(gr)
-		return view
-	}()
-
-	override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
-		super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-		let gr = UIPanGestureRecognizer(target: self, action: #selector(didPan(sender:)))
-		presentedViewController.view.addGestureRecognizer(gr)
-	}
-	@objc
-	func didTap(sender: UITapGestureRecognizer) {
-		presentedViewController.dismiss(animated: true, completion: nil)
-	}
-
-	@objc
-	func didPan(sender: UIPanGestureRecognizer) {
-		guard let view = sender.view, let superView = view.superview,
-			  let presented = presentedView, let container = containerView else { return }
-
-		let location = sender.translation(in: superView)
-
-		switch sender.state {
-			case .began:
-				presented.frame.size.height = container.frame.height
-			case .changed:
-				let velocity = sender.velocity(in: superView)
-
-				switch state {
-					case .interaction:
-						presented.frame.origin.y = location.y + presentedYOffset
-					case .presenting:
-						presented.frame.origin.y = location.y
-				}
-				direction = velocity.y
-			case .ended:
-				let maxPresentedY = container.frame.height - presentedYOffset - 500
-				switch presented.frame.origin.y {
-					case 0...maxPresentedY:
-						changeScale(to: .interaction)
-					default:
-						presentedViewController.dismiss(animated: true, completion: nil)
-				}
-			default:
-				break
-		}
-	}
-
-	func changeScale(to state: ModalScaleState) {
-		guard let presented = presentedView else { return }
-
-		UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 0.5,
-					   initialSpringVelocity: 0.5,
-					   options: .curveEaseInOut, animations: { [weak self] in
-			guard let `self` = self else { return }
-
-			presented.frame = self.frameOfPresentedViewInContainerView
-
-		}, completion: { (isFinished) in
-			self.state = state
-		})
-	}
-
-	override var frameOfPresentedViewInContainerView: CGRect {
-		guard let container = containerView else { return .zero }
-
-		return CGRect(x: 0, y: self.presentedYOffset, width: container.bounds.width, height: container.bounds.height - self.presentedYOffset)
-	}
-
-	override func presentationTransitionWillBegin() {
-		guard let container = containerView,
-			  let coordinator = presentingViewController.transitionCoordinator else { return }
-
-		fadingView.alpha = 0
-		container.addSubview(fadingView)
-		fadingView.addSubview(presentedViewController.view)
-
-		coordinator.animate(alongsideTransition: { [weak self] context in
-			guard let `self` = self else { return }
-
-			self.fadingView.alpha = 1
-		}, completion: nil)
-	}
-
-	override func dismissalTransitionWillBegin() {
-		guard let coordinator = presentingViewController.transitionCoordinator else { return }
-
-		coordinator.animate(alongsideTransition: { [weak self] (context) -> Void in
-			guard let `self` = self else { return }
-
-			self.fadingView.alpha = 0
-		}, completion: nil)
-	}
-
-	override func dismissalTransitionDidEnd(_ completed: Bool) {
-		if completed {
-			fadingView.removeFromSuperview()
-		}
-	}
+    
+    // MARK: - Public Properties
+    
+    override var frameOfPresentedViewInContainerView: CGRect {
+        guard let containerView = containerView else { return .zero }
+        return CGRect(
+            x: 0,
+            y: containerView.bounds.height - (presentedViewHeight ?? 0),
+            width: containerView.bounds.width,
+            height: presentedViewHeight ?? containerView.bounds.height
+        )
+    }
+    
+    // MARK: - Private Properties
+    
+    private var presentedViewHeight: CGFloat?
+    private var swipeVelocity: CGFloat = 0
+    
+    private lazy var fadingView: UIView = {
+        guard let containerView = containerView else { return UIView() }
+        let view = UIView(frame: containerView.bounds)
+        view.backgroundColor = .black.withAlphaComponent(0.75)
+        view.alpha = 0
+        return view
+    }()
+    
+    init(
+        presentedViewController: CustomModalPresentedViewController,
+        presenting presentingViewController: UIViewController?
+    ) {
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        self.presentedViewHeight = presentedViewController.presentedViewHeight
+    }
+    
+    // MARK: - Life Cycle
+    
+    override func presentationTransitionWillBegin() {
+        guard
+            let container = containerView,
+            let coordinator = presentingViewController.transitionCoordinator
+        else { return }
+        
+        addGestureRecognizers()
+        
+        container.addSubview(fadingView)
+        container.addSubview(presentedViewController.view)
+        
+        coordinator.animate(
+            alongsideTransition: { [self] _ in
+            fadingView.alpha = 1
+        },
+            completion: nil
+        )
+    }
+    
+    override func dismissalTransitionWillBegin() {
+        guard let coordinator = presentingViewController.transitionCoordinator else { return }
+        coordinator.animate(alongsideTransition: { [self] _ in
+            fadingView.alpha = 0
+        })
+    }
+    
+    override func dismissalTransitionDidEnd(_ completed: Bool) {
+        if completed {
+            fadingView.removeFromSuperview()
+        }
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func didTapPastPresentedScreen() {
+        presentedViewController.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func didPan(sender: UIPanGestureRecognizer) {
+        guard let presentedView = presentedView,
+              let containerView = containerView else { return }
+        
+        let translation = sender.translation(in: containerView)
+        let presentedViewHeight = presentedViewHeight ?? containerView.bounds.height
+        let presentedViewYOffset = containerView.bounds.height - presentedViewHeight
+        
+        switch sender.state {
+        case .changed:
+            let velocity = sender.velocity(in: containerView)
+            self.swipeVelocity = velocity.y
+            
+            let newOriginYPosition = presentedViewYOffset + translation.y
+            
+            // Устанавливаем границу, выше которой нельзя растягивать наш презентуемый экран
+            guard newOriginYPosition >= frameOfPresentedViewInContainerView.minY else { return }
+            presentedView.frame.origin.y = newOriginYPosition
+            
+        case .ended:
+            let presentedViewYPosition = presentedView.frame.origin.y
+            let yThresholdForDismiss = presentedViewYOffset + presentedViewHeight * 0.25
+            
+            // Если скорость смахивания достаточно высокая - значит пользователь хочет смахнуть окно. Если он достаточно далеко вниз отвел окно и отпустил, то скорее всего он тоже хочет смахнуть окно. В ином случае нужно вернуть нашу вьюху на место.
+            if swipeVelocity > 650 || presentedViewYPosition > yThresholdForDismiss {
+                presentedViewController.dismiss(animated: true, completion: nil)
+            } else {
+                reinstateInitialPosition()
+            }
+            
+        default:
+            break
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func addGestureRecognizers() {
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
+        if let presentedViewController = presentedViewController as? CustomModalPresentedViewController {
+            presentedViewController.viewToSwipeForDismissing.addGestureRecognizer(panGestureRecognizer)
+        } else {
+            presentedViewController.view.addGestureRecognizer(panGestureRecognizer)
+        }
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapPastPresentedScreen))
+        fadingView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    private func reinstateInitialPosition() {
+        guard let presentedView = presentedView else { return }
+        
+        UIView.animate(
+            withDuration: 0.4,
+            delay: 0,
+            usingSpringWithDamping: 0.9,
+            initialSpringVelocity: 0.9,
+            options: .curveEaseInOut
+        ) { [self] in
+            presentedView.frame = frameOfPresentedViewInContainerView
+        }
+    }
+    
 }
 
